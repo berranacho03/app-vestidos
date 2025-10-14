@@ -23,7 +23,7 @@ export type Rental = {
   status: "active" | "canceled";
 };
 
-// In-memory store for demo. Replace with a DB in production.
+// Almacenamiento en memoria para demo. Sustituir por una BD en producción.
 const items: Item[] = [
   {
     id: 1,
@@ -75,7 +75,7 @@ const items: Item[] = [
   },
 ];
 
-let rentals: Rental[] = [];
+const rentals: Rental[] = [];
 
 export function listItems(filters?: {
   q?: string;
