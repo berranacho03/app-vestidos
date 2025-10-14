@@ -20,7 +20,7 @@ export default function ItemCalendar({ itemId }: Props) {
       .catch(() => setBusy([]));
   }, [itemId]);
 
-  // Show next 30 days
+  // Mostrar los próximos 30 días
   const today = new Date();
   const days = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(today);
@@ -46,7 +46,7 @@ export default function ItemCalendar({ itemId }: Props) {
             }`}
           >
             {d.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-            {booked && <div className="mt-1">Booked</div>}
+            {booked && <div className="mt-1">Reservado</div>}
           </div>
         );
       })}

@@ -6,12 +6,13 @@ import {getOrCreateCsrfToken} from "../../../../lib/CsrfSessionManagement";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { Key } from "react";
 
-export default async function ItemDetail({params}: { params: { id: string } }) {
-    const id = Number(params.id);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function ItemDetail({ params }: any) {
+  const id = Number(params.id);
     const item = getItem(id);
     if (!item) return notFound();
 
-    // Generate CSRF token; cookie will be set if missing
+  // Genera token CSRF; se establecerá la cookie si falta
     const csrf = await getOrCreateCsrfToken();
 
     const booked = await getItemRentals(id);

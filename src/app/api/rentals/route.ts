@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Item not available for selected dates" }, { status: 409 });
   }
 
-  const { rental, error } = createRental({
+  const { error } = createRental({
     itemId,
     start,
     end,
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error }, { status: 409 });
 
-  // Redirect back to item page with a success message
+  // Redirige de vuelta a la página del artículo con un indicador de éxito
   const res = NextResponse.redirect(new URL(`/items/${itemId}?success=1`, req.url));
   return res;
 }
