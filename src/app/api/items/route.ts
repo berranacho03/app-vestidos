@@ -1,25 +1,40 @@
-import {NextResponse} from "next/server";
-import {listItems, type Category} from "../../../../lib/RentalManagementSystem";
+import { NextResponse } from "next/server";
+import { query } from "../../../../lib/db";
 
-export function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q") || undefined;
-  const category = (searchParams.get("category") as Category) || undefined;
-  const size = searchParams.get("size") || undefined;
-  const color = searchParams.get("color") || undefined;
-  const style = searchParams.get("style") || undefined;
+// GET: lista items desde DB
+export async function GET() {
+  try {
+    console.log('[api/items] GET handler');
+    const rows = await query("SELECT id, name, price, created_at FROM items ORDER BY id DESC");
+    const items = (rows || []).map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      pricePerDay: Number(r.price || 0),
+      createdAt: r.created_at,
+    }));
+    return NextResponse.json({ items });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || String(err) }, { status: 500 });
+  }
+}
 
-  const items = listItems({ q, category, size, color, style }).map((i) => ({
-    id: i.id,
-    name: i.name,
-    category: i.category,
-    pricePerDay: i.pricePerDay,
-    sizes: i.sizes,
-    color: i.color,
-    style: i.style,
-    image: i.images[0],
-    alt: i.alt,
-  }));
+// POST: crear item mínimo compatible con init.sql (name, price)
+export async function POST(req: Request) {
+  try {
+    console.log('[api/items] POST handler start');
+    const body = await req.json();
+    console.log('[api/items] POST body:', body);
+    const name = (body.name || "").trim();
+    const price = Number(body.price || 0);
+    if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
-  return NextResponse.json({ items });
+    const res = await query("INSERT INTO items (name, price) VALUES (?, ?)", [name, price]);
+    const insertId = (res && (res as any).insertId) || undefined;
+    if (!insertId) return NextResponse.json({ error: "insert failed" }, { status: 500 });
+
+    const inserted = await query("SELECT id, name, price, created_at FROM items WHERE id = ?", [insertId]);
+    return NextResponse.json({ item: (inserted && inserted[0]) || null }, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || String(err) }, { status: 500 });
+  }
 }

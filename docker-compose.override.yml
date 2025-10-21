@@ -1,0 +1,26 @@
+services:
+  web:
+    image: node:20-alpine
+    container_name: appvestidos-web-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "100"
+      NEXT_DEV_HOST: "0.0.0.0"
+      NODE_ENV: development
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      WATCHPACK_POLLING: "true"
+      NEXT_WEBPACK_USEPOLLING: "true"
+    working_dir: /app
+    volumes:
+      - ./:/app:delegated
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - db
+    command: "/bin/sh -c \"npm install && npx next dev -H 0.0.0.0\""

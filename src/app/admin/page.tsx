@@ -1,6 +1,7 @@
 import { isAdmin, getOrCreateCsrfToken } from "@/lib/CsrfSessionManagement";
-import { listItems, listRentals } from "@/lib/RentalManagementSystem";
+import { listRentals } from "@/lib/RentalManagementSystem";
 import { redirect } from "next/navigation";
+import InventoryManager from "./InventoryManager";
 
 type AdminItem = {
   id: number | string;
@@ -14,11 +15,11 @@ export default async function Page() {
   if (!isAdmin()) redirect("/admin/login");
   const csrf = await getOrCreateCsrfToken();
 
-  const items = listItems();
   const rentals = listRentals();
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      {/* test: trigger hot reload */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Panel de administración</h1>
         <form action="/api/admin/logout" method="POST">
@@ -27,31 +28,11 @@ export default async function Page() {
       </div>
 
       <section className="mt-8">
-  <h2 className="font-semibold">Inventario</h2>
-  <p className="text-sm text-slate-600 dark:text-slate-400">Agregar/editar/eliminar puede enlazarse a una base de datos más adelante.</p>
-        <div className="mt-3 overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="text-left">
-                <th className="py-2 pr-4">ID</th>
-                <th className="py-2 pr-4">Name</th>
-                <th className="py-2 pr-4">Category</th>
-                <th className="py-2 pr-4">Sizes</th>
-                <th className="py-2 pr-4">Price/day</th>
-              </tr>
-            </thead>
-            <tbody>
-            {items.map((i: AdminItem) => (
-                <tr key={i.id} className="border-t">
-                  <td className="py-2 pr-4">{i.id}</td>
-                  <td className="py-2 pr-4">{i.name}</td>
-                  <td className="py-2 pr-4">{i.category}</td>
-                  <td className="py-2 pr-4">{i.sizes.join(", ")}</td>
-                  <td className="py-2 pr-4">${i.pricePerDay}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* hot-reload test */}
+        <h2 className="font-semibold">Inventario</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Agrega o edita items desde aquí.</p>
+        <div className="mt-4">
+          <InventoryManager />
         </div>
       </section>
 
