@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  setAdminSession();
-  return NextResponse.redirect(new URL("/admin", req.url));
+  await setAdminSession();
+  const url = new URL(req.url);
+  return NextResponse.redirect(new URL("/admin", url.origin));
 }
