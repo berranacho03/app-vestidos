@@ -1,4 +1,4 @@
-import { isAdmin, getOrCreateCsrfToken } from "@/lib/CsrfSessionManagement";
+import { isAuthenticated } from "@/lib/auth";
 import { listRentals } from "@/lib/RentalManagementSystem";
 import { redirect } from "next/navigation";
 import InventoryManager from "./InventoryManager";
@@ -12,8 +12,7 @@ type AdminItem = {
 };
 
 export default async function Page() {
-  if (!isAdmin()) redirect("/admin/login");
-  const csrf = await getOrCreateCsrfToken();
+  if (!isAuthenticated()) redirect("/admin/login");
 
   const rentals = listRentals();
 
@@ -72,7 +71,7 @@ export default async function Page() {
                         action={`/api/admin/rentals/${r.id}/cancel`}
                         method="POST"
                       >
-                        <input type="hidden" name="csrf" value={csrf} />
+
                         <button className="rounded-lg border px-3 py-1 hover:bg-slate-50 dark:hover:bg-slate-800">Cancel</button>
                       </form>
                     ) : (
