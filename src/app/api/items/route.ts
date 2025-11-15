@@ -5,11 +5,13 @@ import { query } from "../../../../lib/db";
 export async function GET() {
   try {
     console.log('[api/items] GET handler');
-    const rows = await query("SELECT id, name, pricePerDay, createdAt FROM Items ORDER BY id DESC");
+    const rows = await query("SELECT id, name, pricePerDay, category, sizes, createdAt FROM Items ORDER BY id DESC");
     const items = (rows || []).map((r: any) => ({
       id: r.id,
       name: r.name,
       pricePerDay: Number(r.pricePerDay || 0),
+      category: r.category,
+      sizes: typeof r.sizes === 'string' ? JSON.parse(r.sizes) : r.sizes,
       createdAt: r.createdAt,
     }));
     return NextResponse.json({ items });
@@ -18,7 +20,7 @@ export async function GET() {
   }
 }
 
-// POST: crear item mínimo compatible con init.sql (name, price)
+// POST: crear item
 export async function POST(req: Request) {
   try {
     console.log('[api/items] POST handler start');
@@ -26,13 +28,22 @@ export async function POST(req: Request) {
     console.log('[api/items] POST body:', body);
     const name = (body.name || "").trim();
     const pricePerDay = Number(body.price || 0);
+    const category = (body.category || "dress").trim();
+    const description = (body.description || "").trim() || name;
+    const color = (body.color || "").trim() || "N/A";
+    const alt = (body.alt || "").trim() || name;
+    const sizes = body.sizes && body.sizes.length > 0 ? JSON.stringify(body.sizes) : null;
+    
     if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
-    const res = await query("INSERT INTO Items (name, pricePerDay) VALUES (?, ?)", [name, pricePerDay]);
+    const res = await query(
+      "INSERT INTO Items (name, pricePerDay, category, description, color, alt, sizes) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+      [name, pricePerDay, category, description, color, alt, sizes]
+    );
     const insertId = (res && (res as any).insertId) || undefined;
     if (!insertId) return NextResponse.json({ error: "insert failed" }, { status: 500 });
 
-    const inserted = await query("SELECT id, name, pricePerDay, createdAt FROM Items WHERE id = ?", [insertId]);
+    const inserted = await query("SELECT id, name, pricePerDay, category, sizes, createdAt FROM Items WHERE id = ?", [insertId]);
     return NextResponse.json({ item: (inserted && inserted[0]) || null }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || String(err) }, { status: 500 });

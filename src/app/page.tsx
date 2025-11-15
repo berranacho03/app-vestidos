@@ -1,13 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
+import HeaderServer from "./components/HeaderServer";
+import { listItems } from "../../lib/RentalManagementSystem";
 
-export default function Home() {
-  const featured = [
-    { id: 1, name: "Silk Evening Gown", price: 79, image: "/images/dresses/silk-evening-gown.jpg", alt: "Model wearing a champagne silk evening gown" },
-    { id: 2, name: "Black Tie Dress", price: 99, image: "/images/dresses/black-tie-dress.jpg", alt: "Elegant black tie dress" },
-    { id: 3, name: "Floral Midi Dress", price: 49, image: `/images/dresses/floral-midi-dress.jpg`, alt: "Floral midi dress perfect for daytime events" },
-    { id: 4, name: "Velvet Cocktail Dress", price: 59, image: "/images/dresses/velvet-cocktail-dress.jpg", alt: "Velvet cocktail dress in deep tones" },
-  ];
+export default async function Home() {
+  // Obtener los primeros 4 artículos de la base de datos
+  const allItems = await listItems();
+  const featured = allItems.slice(0, 4).map(item => ({
+    id: item.id,
+    name: item.name,
+    price: item.pricePerDay,
+    image: item.images[0] || "https://images.unsplash.com/photo-1566174043461-d5b6b3d63edb?w=400&h=600&fit=crop",
+    alt: item.alt
+  }));
 
   const steps = [
     { emoji: "🧭", title: "Browse", text: "Find styles by size, color, designer, or occasion." },
@@ -17,25 +22,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
-      <header className="sticky top-0 z-30 backdrop-blur bg-white/70 dark:bg-slate-950/60 border-b border-slate-200/60 dark:border-slate-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="font-extrabold text-xl tracking-tight">
-            GlamRent
-          </Link>
-          <nav className="hidden md:flex items-center gap-8 text-sm">
-            <Link href="/search" className="hover:text-fuchsia-600">Browse</Link>
-            <Link href="#how" className="hover:text-fuchsia-600">How it works</Link>
-            <Link href="#featured" className="hover:text-fuchsia-600">Featured</Link>
-            <Link href="/faq" className="hover:text-fuchsia-600">FAQ</Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/admin/login" className="text-sm hover:text-fuchsia-600">Admin</Link>
-            <Link href="/become-a-lender" className="inline-flex items-center rounded-full bg-fuchsia-600 text-white px-4 py-2 text-sm font-medium hover:bg-fuchsia-500">
-              Become a lender
-            </Link>
-          </div>
-        </div>
-      </header>
+      <HeaderServer />
 
       <main>
         <section className="relative overflow-hidden">
@@ -56,12 +43,12 @@ export default function Home() {
                     id="query"
                     name="q"
                     type="text"
-                    placeholder="Search by style, color, or designer"
+                    placeholder="Buscar por estilo, color, nombre..."
                     className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
                   />
                 </div>
                 <div>
-                  <label htmlFor="start" className="sr-only">Start date</label>
+                  <label htmlFor="start" className="sr-only">Fecha de inicio</label>
                   <input
                     id="start"
                     name="start"
@@ -70,7 +57,7 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="end" className="sr-only">End date</label>
+                  <label htmlFor="end" className="sr-only">Fecha de fin</label>
                   <input
                     id="end"
                     name="end"
@@ -85,7 +72,7 @@ export default function Home() {
                     name="size"
                     className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
                   >
-                    <option value="">Any size</option>
+                    <option value="">Cualquier talla</option>
                     <option>XS</option>
                     <option>S</option>
                     <option>M</option>
@@ -96,9 +83,9 @@ export default function Home() {
                 <div className="lg:col-span-5">
                   <button
                     type="submit"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-fuchsia-600 px-6 py-3 text-sm font-semibold text-white hover:bg-fuchsia-500"
+                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-fuchsia-600 px-6 py-3 text-sm font-semibold text-white hover:bg-fuchsia-500 transition-colors"
                   >
-                    Search dresses
+                    Buscar vestidos
                   </button>
                 </div>
               </form>
@@ -108,8 +95,8 @@ export default function Home() {
 
         <section id="featured" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="flex items-end justify-between gap-4">
-            <h2 className="text-2xl sm:text-3xl font-bold">Featured picks</h2>
-            <Link href="/search" className="text-sm text-fuchsia-600 hover:underline">Browse all →</Link>
+            <h2 className="text-2xl sm:text-3xl font-bold">Selección destacada</h2>
+            <Link href="/search" className="text-sm text-fuchsia-600 hover:underline transition-colors">Ver todo →</Link>
           </div>
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featured.map((item) => (

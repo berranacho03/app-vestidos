@@ -23,114 +23,259 @@ export type Rental = {
   status: "active" | "canceled";
 };
 
-// Almacenamiento en memoria para demo. Sustituir por una BD en producción.
-const items: Item[] = [
-  {
-    id: 1,
-    name: "Silk Evening Gown",
-    category: "dress",
-    pricePerDay: 79,
-    sizes: ["XS", "S", "M", "L"],
-    color: "champagne",
-    style: "evening",
-    description: "Luxurious silk gown with flattering silhouette.",
-    images: ["/images/dresses/silk-evening-gown.jpg"],
-    alt: "Model wearing a champagne silk evening gown",
-  },
-  {
-    id: 2,
-    name: "Black Tie Dress",
-    category: "dress",
-    pricePerDay: 99,
-    sizes: ["S", "M", "L", "XL"],
-    color: "black",
-    style: "black-tie",
-    description: "Elegant black-tie dress for formal events.",
-    images: ["/images/dresses/black-tie-dress.jpg"],
-    alt: "Elegant black tie dress",
-  },
-  {
-    id: 3,
-    name: "Floral Midi Dress",
-    category: "dress",
-    pricePerDay: 49,
-    sizes: ["XS", "S", "M"],
-    color: "floral",
-    style: "daytime",
-    description: "Bright floral midi for daytime events.",
-    images: ["/images/dresses/floral-midi-dress.jpg"],
-    alt: "Floral midi dress perfect for daytime events",
-  },
-  {
-    id: 4,
-    name: "Velvet Cocktail Dress",
-    category: "dress",
-    pricePerDay: 59,
-    sizes: ["S", "M", "L"],
-    color: "burgundy",
-    style: "cocktail",
-    description: "Rich velvet cocktail dress in deep tones.",
-    images: ["/images/dresses/velvet-cocktail-dress.jpg"],
-    alt: "Velvet cocktail dress in deep tones",
-  },
-];
+import { query } from './db';
 
-const rentals: Rental[] = [];
+// Función para obtener todos los items desde la base de datos
+async function getAllItemsFromDB(): Promise<Item[]> {
+  try {
+    const rows = await query("SELECT * FROM Items ORDER BY id DESC");
+    return (rows || []).map((r: any) => {
+      let images: string[];
+      try {
+        const parsedImages = typeof r.images === 'string' ? JSON.parse(r.images || '[]') : (r.images || []);
+        // Filtrar y validar URLs de imágenes
+        images = parsedImages.map((img: string) => {
+          // Si la imagen no es una URL válida, usar una imagen por defecto
+          if (!img || (!img.startsWith('http') && !img.startsWith('/images/'))) {
+            return getDefaultImageForCategory(r.category);
+          }
+          return img;
+        }).filter(Boolean);
+      } catch {
+        images = [];
+      }
+      
+      // Si no hay imágenes válidas, usar una por defecto
+      if (images.length === 0) {
+        images = [getDefaultImageForCategory(r.category)];
+      }
+      
+      return {
+        id: r.id,
+        name: r.name,
+        category: r.category as Category,
+        pricePerDay: Number(r.pricePerDay || 0),
+        sizes: typeof r.sizes === 'string' ? JSON.parse(r.sizes || '[]') : (r.sizes || []),
+        color: r.color || 'N/A',
+        style: r.style || undefined,
+        description: r.description || r.name,
+        images,
+        alt: r.alt || r.name,
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching items from DB:', error);
+    return [];
+  }
+}
 
-export function listItems(filters?: {
+// Función helper para obtener imagen por defecto según categoría
+function getDefaultImageForCategory(category: string): string {
+  // Usar una imagen por defecto que no requiera configuración adicional
+  return "https://static.vecteezy.com/system/resources/previews/019/787/070/non_2x/no-photos-and-no-phones-forbidden-sign-on-transparent-background-free-png.png";
+}
+
+// Función para obtener un item específico desde la base de datos
+async function getItemFromDB(id: number): Promise<Item | null> {
+  try {
+    const rows = await query("SELECT * FROM Items WHERE id = ?", [id]);
+    if (!rows || rows.length === 0) return null;
+    
+    const r = rows[0] as any;
+    let images: string[];
+    try {
+      const parsedImages = typeof r.images === 'string' ? JSON.parse(r.images || '[]') : (r.images || []);
+      // Filtrar y validar URLs de imágenes
+      images = parsedImages.map((img: string) => {
+        // Si la imagen no es una URL válida, usar una imagen por defecto
+        if (!img || (!img.startsWith('http') && !img.startsWith('/images/'))) {
+          return getDefaultImageForCategory(r.category);
+        }
+        return img;
+      }).filter(Boolean);
+    } catch {
+      images = [];
+    }
+    
+    // Si no hay imágenes válidas, usar una por defecto
+    if (images.length === 0) {
+      images = [getDefaultImageForCategory(r.category)];
+    }
+    
+    return {
+      id: r.id,
+      name: r.name,
+      category: r.category as Category,
+      pricePerDay: Number(r.pricePerDay || 0),
+      sizes: typeof r.sizes === 'string' ? JSON.parse(r.sizes || '[]') : (r.sizes || []),
+      color: r.color || 'N/A',
+      style: r.style || undefined,
+      description: r.description || r.name,
+      images,
+      alt: r.alt || r.name,
+    };
+  } catch (error) {
+    console.error('Error fetching item from DB:', error);
+    return null;
+  }
+}
+
+
+
+export async function listItems(filters?: {
   q?: string;
   category?: Category;
   size?: string;
   color?: string;
   style?: string;
 }) {
+  const items = await getAllItemsFromDB();
   const q = filters?.q?.toLowerCase().trim();
   return items.filter((it) => {
     if (filters?.category && it.category !== filters.category) return false;
-    if (filters?.size && !it.sizes.includes(filters.size)) return false;
-    if (filters?.color && it.color.toLowerCase() !== filters.color.toLowerCase()) return false;
-    if (filters?.style && (it.style ?? "").toLowerCase() !== filters.style.toLowerCase()) return false;
-    if (q) {
-      const hay = [it.name, it.color, it.style ?? "", it.category].join(" ").toLowerCase();
-      if (!hay.includes(q)) return false;
+    
+    // Búsqueda flexible de tallas (case insensitive)
+    if (filters?.size) {
+      const searchSize = filters.size.toLowerCase();
+      const hasSize = it.sizes.some(size => size.toLowerCase() === searchSize);
+      if (!hasSize) return false;
     }
+    
+    // Búsqueda flexible de color (case insensitive y parcial)
+    if (filters?.color) {
+      const searchColor = filters.color.toLowerCase();
+      const itemColor = it.color.toLowerCase();
+      if (!itemColor.includes(searchColor)) return false;
+    }
+    
+    // Búsqueda flexible de estilo (case insensitive y parcial)
+    if (filters?.style) {
+      const searchStyle = filters.style.toLowerCase();
+      const itemStyle = (it.style ?? "").toLowerCase();
+      if (!itemStyle.includes(searchStyle)) return false;
+    }
+    
+    // Búsqueda general más completa
+    if (q) {
+      const searchFields = [
+        it.name,
+        it.color,
+        it.style ?? "",
+        it.category,
+        it.description,
+        ...it.sizes
+      ].join(" ").toLowerCase();
+      
+      // Permitir búsqueda por palabras separadas
+      const searchWords = q.split(/\s+/).filter(word => word.length > 0);
+      const matchesAllWords = searchWords.every(word => searchFields.includes(word));
+      if (!matchesAllWords) return false;
+    }
+    
     return true;
   });
 }
 
-export function getItem(id: number) {
-  return items.find((i) => i.id === id) ?? null;
+export async function getItem(id: number) {
+  return await getItemFromDB(id);
 }
 
-export function getItemRentals(itemId: number) {
-  return rentals.filter((r) => r.itemId === itemId && r.status === "active");
+export async function getItemRentals(itemId: number) {
+  try {
+    const rows = await query(
+      "SELECT * FROM Rentals WHERE itemId = ? AND status = ? ORDER BY start ASC",
+      [itemId, "active"]
+    );
+    return (rows || []).map((r: any) => ({
+      id: r.id,
+      itemId: r.itemId,
+      start: typeof r.start === 'string' ? r.start.slice(0, 10) : r.start.toISOString().slice(0, 10),
+      end: typeof r.end === 'string' ? r.end.slice(0, 10) : r.end.toISOString().slice(0, 10),
+      customer: {
+        name: r.customerName,
+        email: r.customerEmail,
+        phone: r.customerPhone,
+      },
+      createdAt: r.createdAt,
+      status: r.status,
+    }));
+  } catch (error) {
+    console.error('Error fetching item rentals:', error);
+    return [];
+  }
 }
 
 export function hasOverlap(aStart: string, aEnd: string, bStart: string, bEnd: string) {
   return !(aEnd < bStart || bEnd < aStart);
 }
 
-export function isItemAvailable(itemId: number, start: string, end: string) {
-  const rs = getItemRentals(itemId);
+export async function isItemAvailable(itemId: number, start: string, end: string) {
+  const rs = await getItemRentals(itemId);
   return rs.every((r) => !hasOverlap(start, end, r.start, r.end));
 }
 
-export function createRental(data: Omit<Rental, "id" | "createdAt" | "status">) {
-  const ok = isItemAvailable(data.itemId, data.start, data.end);
+export async function createRental(data: Omit<Rental, "id" | "createdAt" | "status">) {
+  const ok = await isItemAvailable(data.itemId, data.start, data.end);
   if (!ok) return { error: "Item is not available for the selected dates." as const };
-  const id = crypto.randomUUID();
-  const rental: Rental = { ...data, id, createdAt: new Date().toISOString(), status: "active" };
-  rentals.push(rental);
-  return { rental };
+  
+  try {
+    const id = crypto.randomUUID();
+    // Formato MySQL TIMESTAMP: 'YYYY-MM-DD HH:MM:SS'
+    const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
+    await query(
+      "INSERT INTO Rentals (id, itemId, start, end, customerName, customerEmail, customerPhone, createdAt, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, data.itemId, data.start, data.end, data.customer.name, data.customer.email, data.customer.phone, createdAt, "active"]
+    );
+    
+    const rental: Rental = {
+      id,
+      itemId: data.itemId,
+      start: data.start,
+      end: data.end,
+      customer: data.customer,
+      createdAt,
+      status: "active"
+    };
+    
+    return { rental };
+  } catch (error) {
+    console.error('Error creating rental:', error);
+    return { error: "Failed to create rental." as const };
+  }
 }
 
-export function listRentals() {
-  return rentals.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+export async function listRentals() {
+  try {
+    const rows = await query("SELECT * FROM Rentals ORDER BY createdAt DESC");
+    return (rows || []).map((r: any) => ({
+      id: r.id,
+      itemId: r.itemId,
+      start: r.start,
+      end: r.end,
+      customer: {
+        name: r.customerName,
+        email: r.customerEmail,
+        phone: r.customerPhone,
+      },
+      createdAt: r.createdAt,
+      status: r.status,
+    }));
+  } catch (error) {
+    console.error('Error fetching rentals:', error);
+    return [];
+  }
 }
 
-export function cancelRental(id: string) {
-  const r = rentals.find((x) => x.id === id);
-  if (!r) return { error: "Not found" as const };
-  r.status = "canceled";
-  return { ok: true as const };
+export async function cancelRental(id: string) {
+  try {
+    const result = await query("UPDATE Rentals SET status = ? WHERE id = ?", ["canceled", id]);
+    if (!result || (result as any).affectedRows === 0) {
+      return { error: "Not found" as const };
+    }
+    return { ok: true as const };
+  } catch (error) {
+    console.error('Error canceling rental:', error);
+    return { error: "Failed to cancel rental" as const };
+  }
 }

@@ -39,37 +39,55 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 grid gap-3 rounded-2xl border p-4">
-      <input
-        name="username"
-        placeholder="Username"
-        className="rounded-xl border px-4 py-3 text-sm"
-        required
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        className="rounded-xl border px-4 py-3 text-sm"
-        required
-      />
-      <button
-        type="submit"
-        disabled={loading}
-        className={`rounded-xl bg-fuchsia-600 text-white px-4 py-3 text-sm font-semibold ${
-          loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-fuchsia-700'
-        }`}
-      >
-        {loading ? 'Iniciando sesión...' : 'Sign in'}
-      </button>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <label
+          htmlFor="username"
+          className="block text-sm font-medium text-slate-700 mb-2"
+        >
+          Usuario
+        </label>
+        <input
+          id="username"
+          name="username"
+          placeholder="Nombre de usuario"
+          className="w-full px-4 py-3 border border-slate-300 bg-slate-50 rounded-lg text-slate-900 placeholder:text-slate-500 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all outline-none"
+          required
+        />
+      </div>
+      
+      <div>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-slate-700 mb-2"
+        >
+          Contraseña
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Tu contraseña"
+          className="w-full px-4 py-3 border border-slate-300 bg-slate-50 rounded-lg text-slate-900 placeholder:text-slate-500 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all outline-none"
+          required
+        />
+      </div>
 
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
-          {error}
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+          <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
 
-      <p className="text-xs text-slate-500">Protected area. Authorized staff only.</p>
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-slate-900 text-white font-medium py-2.5 px-6 rounded-lg hover:bg-slate-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+      </button>
+
+      <p className="text-xs text-slate-500 text-center">Área protegida. Solo personal autorizado.</p>
     </form>
   );
 }

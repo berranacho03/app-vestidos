@@ -26,15 +26,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 });
   }
 
-  const item = getItem(itemId);
+  const item = await getItem(itemId);
   if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
   if (end < start) return NextResponse.json({ error: "End date must be after start date" }, { status: 400 });
 
-  if (!isItemAvailable(itemId, start, end)) {
+  if (!(await isItemAvailable(itemId, start, end))) {
     return NextResponse.json({ error: "Item not available for selected dates" }, { status: 409 });
   }
 
-  const { error } = createRental({
+  const { error } = await createRental({
     itemId,
     start,
     end,
