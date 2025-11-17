@@ -1,7 +1,9 @@
 pipeline {
-  agent any
-  tools {
-    nodejs "node18"   
+  agent {
+    docker {
+      image 'node:18-alpine'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
   }
   stages {
     stage('Checkout') {
@@ -21,7 +23,6 @@ pipeline {
     }
     stage('Optional Lint') {
       steps {
-        // Don't fail pipeline if lint isn't configured
         sh 'npm run lint || true'
       }
     }
