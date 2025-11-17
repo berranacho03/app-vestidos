@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,17 +12,21 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
-    "db:test": "node scripts/db-test.js"
+    "db:test": "node scripts/db-test.js",
+    "db:init": "node scripts/init-db.js",
+    "db:setup": "node scripts/init-appvestidos.js",
+    "db:fix": "node scripts/add-uncategorized.js"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
+    "mysql2": "^3.6.0",
     "next": "15.4.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "mysql2": "^3.6.0",
-    "dotenv": "^16.3.1"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
