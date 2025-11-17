@@ -43,7 +43,6 @@ export async function POST(req: Request) {
 
   if (error) return NextResponse.json({ error }, { status: 409 });
 
-  // Redirige de vuelta a la página del artículo con un indicador de éxito
-  const res = NextResponse.redirect(new URL(`/items/${itemId}?success=1`, req.url));
-  return res;
+  // Retorna éxito en JSON
+  return NextResponse.json({ success: true, message: "Rental created successfully" }, { status: 200 });
 }

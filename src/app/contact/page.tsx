@@ -1,7 +1,8 @@
+
 "use client";
 
 import Link from "next/link";
-import HeaderServer from "../components/HeaderServer";
+import HeaderClient from "../components/HeaderClient";
 import { useState } from "react";
 
 export default function ContactPage() {
@@ -20,7 +21,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
-      <HeaderServer />
+      <HeaderClient />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="space-y-8">
@@ -31,18 +32,17 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+          <div className="grid grid-cols-1 gap-8 mt-12">
             {/* Contact Information */}
-            <div className="space-y-6">
+            <div className="space-y-6 flex flex-col items-center text-center">
               <div>
-                <h2 className="text-2xl font-semibold mb-6">Contáctenos</h2>
                 <p className="text-slate-700 dark:text-slate-300">
                   ¿Tiene alguna pregunta sobre alquileres, devoluciones o su cuenta? Nuestro equipo de atención al cliente está aquí para ayudarle.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col items-center gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center">
                     <svg className="w-6 h-6 text-fuchsia-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -55,7 +55,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col items-center gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center">
                     <svg className="w-6 h-6 text-fuchsia-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -63,12 +63,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Teléfono</h3>
-                    <p className="text-slate-600 dark:text-slate-400">+1 (555) 123-4567</p>
+                    <p className="text-slate-600 dark:text-slate-400">+598 95 786 434</p>
                     <p className="text-sm text-slate-500 dark:text-slate-500">Lun-Vie, 9am-6pm EST</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col items-center gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center">
                     <svg className="w-6 h-6 text-fuchsia-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -78,14 +78,14 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold">Dirección</h3>
                     <p className="text-slate-600 dark:text-slate-400">
-                      123 Fashion Avenue<br />
-                      New York, NY 10001<br />
-                      Estados Unidos
+                      8 de Octubre<br />
+                      Montevideo, 11600<br />
+                      Uruguay
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col items-center gap-4">
                   <div className="flex-shrink-0 w-12 h-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center">
                     <svg className="w-6 h-6 text-fuchsia-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -127,92 +127,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Contact Form */}
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8">
-              <h2 className="text-2xl font-semibold mb-6">Envíenos un Mensaje</h2>
-              
-              {formStatus === "success" && (
-                <div className="mb-6 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-4">
-                  <p className="text-green-800 dark:text-green-300 text-sm">
-                    ✓ ¡Gracias por contactarnos! Nos pondremos en contacto pronto.
-                  </p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">
-                    Nombre *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    className="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                    placeholder="Su nombre completo"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2">
-                    Correo Electrónico *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    className="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                    placeholder="tu@ejemplo.com"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                    Asunto *
-                  </label>
-                  <select
-                    id="subject"
-                    name="subject"
-                    required
-                    className="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  >
-                    <option value="">Seleccione un asunto</option>
-                    <option value="rental">Pregunta sobre Alquiler</option>
-                    <option value="return">Devoluciones e Intercambios</option>
-                    <option value="account">Soporte de Cuenta</option>
-                    <option value="billing">Facturación y Pagos</option>
-                    <option value="feedback">Comentarios</option>
-                    <option value="other">Otro</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium mb-2">
-                    Mensaje *
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={5}
-                    className="w-full rounded-lg border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500 resize-none"
-                    placeholder="Díganos cómo podemos ayudarle..."
-                  />
-                </div>
-
-                <div>
-                  <button
-                    type="submit"
-                    disabled={formStatus === "sending"}
-                    className="w-full rounded-lg bg-fuchsia-600 px-6 py-3 text-sm font-semibold text-white hover:bg-fuchsia-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {formStatus === "sending" ? "Enviando..." : "Enviar Mensaje"}
-                  </button>
-                </div>
-              </form>
-            </div>
+            
           </div>
 
           <div className="pt-8 border-t border-slate-200 dark:border-slate-800">

@@ -7,6 +7,7 @@ import { isUserAuthenticatedServer, getCurrentUserServer, getFullUserInfoServer 
 import Link from "next/link";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
 import { Key } from "react";
+import RentalForm from "./RentalForm";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function ItemDetail({ params }: any) {
@@ -78,57 +79,12 @@ export default async function ItemDetail({ params }: any) {
 
           <div className="mt-10">
             <h2 className="font-semibold mb-3">Programar un alquiler</h2>
-            <form action="/api/rentals" method="POST" className="grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl border p-4">
-              <input type="hidden" name="itemId" value={id} />
-              <input type="hidden" name="csrf" value={csrf} />
-              
-              {isAuthenticated && fullUserInfo ? (
-                // Usuario autenticado: usar datos ocultos
-                <>
-                  <input type="hidden" name="name" value={fullUserInfo.name} />
-                  <input type="hidden" name="email" value={fullUserInfo.email} />
-                  <input type="hidden" name="phone" value={fullUserInfo.phone} />
-                  
-                  {/* Mostrar información del usuario */}
-                  <div className="sm:col-span-2 bg-slate-50 rounded-lg p-4 mb-4">
-                    <h3 className="text-sm font-medium text-slate-700 mb-2">Alquilando como usuario:</h3>
-                    <p className="text-sm text-slate-600">{fullUserInfo.name} • {fullUserInfo.email} • {fullUserInfo.phone}</p>
-                  </div>
-                </>
-              ) : (
-                // Usuario no autenticado: mostrar campos de información personal
-                <>
-                  <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Nombre completo</label>
-                    <input id="name" name="name" required placeholder="Ingresa tu nombre completo" className="w-full rounded-xl border px-4 py-3 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Correo electrónico</label>
-                    <input id="email" name="email" type="email" required placeholder="tu@email.com" className="w-full rounded-xl border px-4 py-3 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Teléfono</label>
-                    <input id="phone" name="phone" required placeholder="Tu número de teléfono" className="w-full rounded-xl border px-4 py-3 text-sm" />
-                  </div>
-                </>
-              )}
-              
-              {/* Campos de fechas - siempre visibles */}
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Fecha de inicio</label>
-                <input id="start" name="start" type="date" required className="w-full rounded-xl border px-4 py-3 text-sm" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Fecha de fin</label>
-                <input id="end" name="end" type="date" required className="w-full rounded-xl border px-4 py-3 text-sm" />
-              </div>
-              
-              <div className="sm:col-span-2">
-                <button className="w-full sm:w-auto rounded-xl bg-fuchsia-600 text-white px-6 py-3 text-sm font-semibold hover:bg-fuchsia-500">
-                  {isAuthenticated ? "Alquilar ahora" : "Solicitar alquiler"}
-                </button>
-              </div>
-            </form>
+            <RentalForm 
+              itemId={id}
+              csrf={csrf}
+              isAuthenticated={isAuthenticated}
+              fullUserInfo={fullUserInfo}
+            />
             <p className="mt-2 text-xs text-slate-500">
               {isAuthenticated 
                 ? "Tu solicitud de alquiler será procesada inmediatamente con la información de tu cuenta." 

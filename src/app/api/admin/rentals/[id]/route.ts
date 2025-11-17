@@ -28,3 +28,22 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   console.log("Rental canceled successfully:", rentalId);
   return NextResponse.json({ success: true, message: "Rental canceled successfully" });
 }
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  if (!(await isAuthenticatedServer())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rentalId = params.id;
+  if (!rentalId) return NextResponse.json({ error: "Missing rental ID" }, { status: 400 });
+
+  try {
+    const { deleteRental } = await import('../../../../../../lib/RentalManagementSystem');
+    const result = await deleteRental(rentalId);
+    if ((result as any).error) return NextResponse.json({ error: (result as any).error }, { status: 404 });
+    return NextResponse.json({ success: true, message: 'Rental deleted' });
+  } catch (err) {
+    console.error('Error deleting rental:', err);
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
+  }
+}

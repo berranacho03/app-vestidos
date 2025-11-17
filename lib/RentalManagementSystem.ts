@@ -279,3 +279,16 @@ export async function cancelRental(id: string) {
     return { error: "Failed to cancel rental" as const };
   }
 }
+
+export async function deleteRental(id: string) {
+  try {
+    const result = await query("DELETE FROM Rentals WHERE id = ?", [id]);
+    if (!result || (result as any).affectedRows === 0) {
+      return { error: "Not found" as const };
+    }
+    return { ok: true as const };
+  } catch (error) {
+    console.error('Error deleting rental:', error);
+    return { error: "Failed to delete rental" as const };
+  }
+}
