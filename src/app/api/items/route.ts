@@ -33,12 +33,14 @@ export async function POST(req: Request) {
     const color = (body.color || "").trim() || "N/A";
     const alt = (body.alt || "").trim() || name;
     const sizes = body.sizes && body.sizes.length > 0 ? JSON.stringify(body.sizes) : null;
+    const imageUrl = body.imageUrl ? body.imageUrl.trim() : null;
+    const images = imageUrl ? JSON.stringify([imageUrl]) : JSON.stringify(["/images/dresses/default.jpg"]);
     
     if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
     const res = await query(
-      "INSERT INTO Items (name, pricePerDay, category, description, color, alt, sizes) VALUES (?, ?, ?, ?, ?, ?, ?)", 
-      [name, pricePerDay, category, description, color, alt, sizes]
+      "INSERT INTO Items (name, pricePerDay, category, description, color, alt, sizes, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+      [name, pricePerDay, category, description, color, alt, sizes, images]
     );
     const insertId = (res && (res as any).insertId) || undefined;
     if (!insertId) return NextResponse.json({ error: "insert failed" }, { status: 500 });

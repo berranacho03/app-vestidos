@@ -15,7 +15,7 @@ export async function PUT(
     }
 
     const body = await req.json();
-    const { name, category, sizes, price } = body;
+    const { name, category, sizes, price, imageUrl } = body;
 
     // Validar campos requeridos
     if (!name || !category) {
@@ -34,10 +34,11 @@ export async function PUT(
     // Actualizar el item
     const sizesJson = Array.isArray(sizes) && sizes.length > 0 ? JSON.stringify(sizes) : null;
     const pricePerDay = parseFloat(price) || 0;
+    const images = imageUrl && imageUrl.trim() ? JSON.stringify([imageUrl.trim()]) : JSON.stringify(["/images/dresses/default.jpg"]);
 
     await query(
-      "UPDATE Items SET name = ?, category = ?, sizes = ?, pricePerDay = ? WHERE id = ?",
-      [name, category, sizesJson, pricePerDay, itemId]
+      "UPDATE Items SET name = ?, category = ?, sizes = ?, pricePerDay = ?, images = ? WHERE id = ?",
+      [name, category, sizesJson, pricePerDay, images, itemId]
     );
 
     return NextResponse.json({

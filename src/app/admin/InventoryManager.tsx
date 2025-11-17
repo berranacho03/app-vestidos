@@ -26,6 +26,7 @@ export default function InventoryManager() {
   const [category, setCategory] = useState("dress");
   const [sizes, setSizes] = useState("");
   const [price, setPrice] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<number | string | null>(null);
 
@@ -52,6 +53,7 @@ export default function InventoryManager() {
     setCategory(item.category || "dress");
     setSizes((item.sizes || []).join(", "));
     setPrice(String(item.pricePerDay || ""));
+    setImageUrl("");
     setShowModal(true);
     setOpenMenuId(null);
   }
@@ -62,6 +64,7 @@ export default function InventoryManager() {
     setCategory("dress");
     setSizes("");
     setPrice("");
+    setImageUrl("");
     setShowModal(true);
   }
 
@@ -74,6 +77,7 @@ export default function InventoryManager() {
         category,
         sizes: sizes.split(",").map((s) => s.trim()).filter(Boolean),
         price: Number(price || 0),
+        imageUrl: imageUrl.trim() || null,
       };
 
       const url = editingItem ? `/api/items/${editingItem.id}` : "/api/items";
@@ -95,6 +99,7 @@ export default function InventoryManager() {
       setCategory("dress");
       setSizes("");
       setPrice("");
+      setImageUrl("");
       setEditingItem(null);
       setShowModal(false);
       await fetchItems();
@@ -440,6 +445,18 @@ export default function InventoryManager() {
                     step="0.01" 
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">URL de imagen (opcional)</label>
+                <input 
+                  className="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-slate-900 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all outline-none" 
+                  placeholder="https://ejemplo.com/imagen.jpg" 
+                  value={imageUrl} 
+                  onChange={(e) => setImageUrl(e.target.value)} 
+                  type="url"
+                />
+                <p className="text-xs text-slate-500 mt-1">Si no se especifica, se usará la imagen por defecto</p>
               </div>
 
               {error && (
