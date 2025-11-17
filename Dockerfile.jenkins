@@ -2,9 +2,10 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-# Instalar Docker CLI
+# Instalar Git y Docker CLI
 RUN apt-get update && \
     apt-get install -y \
+    git \
     apt-transport-https \
     ca-certificates \
     curl \
