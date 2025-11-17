@@ -38,17 +38,20 @@ services:
     command: ["/bin/sh", "-c", "npm install --no-audit --no-fund && npm run dev -- -H 0.0.0.0"]
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
     container_name: appvestidos-jenkins
     restart: unless-stopped
+    user: root
     ports:
       - "8080:8080"
       - "50000:50000"
     env_file:
       - .env
     environment:
-      # Keep setup wizard enabled so initial admin password is required
       TZ: "UTC"
+      DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
