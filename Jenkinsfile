@@ -9,7 +9,6 @@ pipeline {
     stage('Checkout') {
       steps {
         checkout scm
-          any
         sh 'npm ci --legacy-peer-deps'
       }
     }
@@ -19,36 +18,39 @@ pipeline {
       }
     }
     stage('Optional Lint') {
-            sh '''
-              docker run --rm \
-                -v ${WORKSPACE}:${WORKSPACE} \
-                -w ${WORKSPACE} \
-                node:18-alpine \
-                sh -c "npm ci --legacy-peer-deps"
-            '''
+      steps {
+        sh '''
+          docker run --rm \
+            -v ${WORKSPACE}:${WORKSPACE} \
+            -w ${WORKSPACE} \
+            node:18-alpine \
+            sh -c "npm ci --legacy-peer-deps"
+        '''
         sh 'npm run lint || true'
       }
     }
     stage('Archive') {
-            sh '''
-              docker run --rm \
-                -v ${WORKSPACE}:${WORKSPACE} \
-                -w ${WORKSPACE} \
-                node:18-alpine \
-                sh -c "npm run build"
-            '''
+      steps {
+        sh '''
+          docker run --rm \
+            -v ${WORKSPACE}:${WORKSPACE} \
+            -w ${WORKSPACE} \
+            node:18-alpine \
+            sh -c "npm run build"
+        '''
         archiveArtifacts artifacts: 'public/**, .next/**', allowEmptyArchive: true
       }
     }
   }
   post {
-            sh '''
-              docker run --rm \
-                -v ${WORKSPACE}:${WORKSPACE} \
-                -w ${WORKSPACE} \
-                node:18-alpine \
-                sh -c "npm run lint || true"
-            '''
+    always {
+      sh '''
+        docker run --rm \
+          -v ${WORKSPACE}:${WORKSPACE} \
+          -w ${WORKSPACE} \
+          node:18-alpine \
+          sh -c "npm run lint || true"
+      '''
       echo 'Pipeline finished'
     }
   }
