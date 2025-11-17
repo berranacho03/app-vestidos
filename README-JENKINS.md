@@ -29,3 +29,16 @@ Notes & security:
 
 - The Jenkins container is configured to bind the Docker socket (`/var/run/docker.sock`) so builds can run Docker commands. Be aware this gives the Jenkins container elevated access to the Docker daemon on the host.
 - You may prefer to run Jenkins separately (not using the project's compose file) for production or shared CI.
+
+Alternativa: configurar la herramienta NodeJS en Jenkins
+----------------------------------------------------
+
+Si prefieres no usar `docker run` dentro del pipeline, puedes configurar Node.js como "Global Tool" en Jenkins:
+
+- Instala el plugin **NodeJS** desde "Manage Jenkins" → "Manage Plugins".
+- Ve a "Manage Jenkins" → "Global Tool Configuration" → "NodeJS installations".
+- Añade una instalación, dale el nombre `node18` (o cambia el nombre en el `Jenkinsfile`).
+- En ese caso, en el `Jenkinsfile` puedes usar `tools { nodejs "node18" }` y ejecutar `npm` directamente.
+
+Nota: Usar la configuración global requiere que Jenkins pueda descargar o disponer del binario Node (internet o binarios preinstalados en el servidor).
+
