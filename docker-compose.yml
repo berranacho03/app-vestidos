@@ -37,5 +37,24 @@ services:
       - ./:/app:delegated
     command: ["/bin/sh", "-c", "npm install --no-audit --no-fund && npm run dev -- -H 0.0.0.0"]
 
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: appvestidos-jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    env_file:
+      - .env
+    environment:
+      # Keep setup wizard enabled so initial admin password is required
+      TZ: "UTC"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - db
+
 volumes:
   db_data:
+  jenkins_home:
