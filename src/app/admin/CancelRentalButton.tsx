@@ -67,6 +67,50 @@ export default function CancelRentalButton({ rentalId, status }: CancelRentalBut
     }
   }
 
+  const handleApprove = async () => {
+    if (isSubmitting) return
+    
+    const result = await Swal.fire({
+      title: '¿Aprobar este alquiler?',
+      text: 'El alquiler pasará a estado activo',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar',
+    })
+
+    if (!result.isConfirmed) return
+
+    setIsSubmitting(true)
+    setMenuOpen(false)
+    
+    try {
+      const response = await fetch(`/api/admin/rentals/${rentalId}/approve`, { method: 'POST' })
+      if (response.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Aprobado',
+          text: 'El alquiler fue aprobado correctamente',
+          timer: 2000,
+          showConfirmButton: false,
+        })
+        window.location.reload()
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Error al aprobar el alquiler')
+      }
+    } catch (err: any) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err?.message || 'Ocurrió un error al aprobar el alquiler',
+      })
+      setIsSubmitting(false)
+    }
+  }
+
   const handleDelete = async () => {
     if (isSubmitting) return
     
@@ -111,7 +155,7 @@ export default function CancelRentalButton({ rentalId, status }: CancelRentalBut
     }
   }
 
-  if (status !== "active" && status !== "canceled") {
+  if (status !== "active" && status !== "canceled" && status !== "pending") {
     return <span className="text-slate-400">—</span>
   }
 
@@ -131,7 +175,18 @@ export default function CancelRentalButton({ rentalId, status }: CancelRentalBut
 
       {menuOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-50">
-          {status === 'active' && (
+          {status === 'pending' && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleApprove() }} 
+              className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Aprobar
+            </button>
+          )}
+          {(status === 'active' || status === 'pending') && (
             <button 
               onClick={(e) => { e.stopPropagation(); handleCancel() }} 
               className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"

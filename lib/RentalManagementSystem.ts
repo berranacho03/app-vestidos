@@ -20,7 +20,7 @@ export type Rental = {
   end: string;   // ISO date (yyyy-mm-dd)
   customer: { name: string; email: string; phone: string };
   createdAt: string;
-  status: "active" | "canceled";
+  status: "pending" | "active" | "canceled";
 };
 
 import { query } from './db';
@@ -225,7 +225,7 @@ export async function createRental(data: Omit<Rental, "id" | "createdAt" | "stat
     
     await query(
       "INSERT INTO Rentals (id, itemId, start, end, customerName, customerEmail, customerPhone, createdAt, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, data.itemId, data.start, data.end, data.customer.name, data.customer.email, data.customer.phone, createdAt, "active"]
+      [id, data.itemId, data.start, data.end, data.customer.name, data.customer.email, data.customer.phone, createdAt, "pending"]
     );
     
     const rental: Rental = {
@@ -235,7 +235,7 @@ export async function createRental(data: Omit<Rental, "id" | "createdAt" | "stat
       end: data.end,
       customer: data.customer,
       createdAt,
-      status: "active"
+      status: "pending"
     };
     
     return { rental };
@@ -277,6 +277,19 @@ export async function cancelRental(id: string) {
   } catch (error) {
     console.error('Error canceling rental:', error);
     return { error: "Failed to cancel rental" as const };
+  }
+}
+
+export async function approveRental(id: string) {
+  try {
+    const result = await query("UPDATE Rentals SET status = ? WHERE id = ?", ["active", id]);
+    if (!result || (result as any).affectedRows === 0) {
+      return { error: "Not found" as const };
+    }
+    return { ok: true as const };
+  } catch (error) {
+    console.error('Error approving rental:', error);
+    return { error: "Failed to approve rental" as const };
   }
 }
 

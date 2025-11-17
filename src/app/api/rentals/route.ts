@@ -30,6 +30,16 @@ export async function POST(req: Request) {
   if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
   if (end < start) return NextResponse.json({ error: "End date must be after start date" }, { status: 400 });
 
+  // Validar que el periodo no exceda 5 días
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays > 5) {
+    return NextResponse.json({ error: "Rental period cannot exceed 5 days" }, { status: 400 });
+  }
+
   if (!(await isItemAvailable(itemId, start, end))) {
     return NextResponse.json({ error: "Item not available for selected dates" }, { status: 409 });
   }

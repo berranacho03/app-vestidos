@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS Rentals (
   customerEmail VARCHAR(255) NOT NULL,
   customerPhone VARCHAR(32) NOT NULL,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  status ENUM('active', 'canceled') DEFAULT 'active',
+  status ENUM('pending', 'active', 'canceled') DEFAULT 'pending',
 
   FOREIGN KEY (itemId) REFERENCES Items(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
