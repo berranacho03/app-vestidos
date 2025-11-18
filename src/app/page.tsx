@@ -48,59 +48,101 @@ export default async function Home() {
                 Lucí de manera espectacular sin pagar un precio elevado.
               </p>
 
-              <form action="/search" method="GET" className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 p-4 shadow-sm">
-                <div className="col-span-1 lg:col-span-2">
-                  <label htmlFor="query" className="sr-only">Search</label>
-                  <input
-                    id="query"
-                    name="q"
-                    type="text"
-                    placeholder="Buscar por estilo, color, nombre..."
-                    className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  />
+              {/* Card de filtros */}
+              <div className="mt-8 bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
+                <div className="border-b border-slate-200 dark:border-slate-800 p-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Filtros de búsqueda</h3>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Encuentra exactamente lo que buscas</p>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="start" className="sr-only">Fecha de inicio</label>
-                  <input
-                    id="start"
-                    name="start"
-                    type="date"
-                    className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="end" className="sr-only">Fecha de fin</label>
-                  <input
-                    id="end"
-                    name="end"
-                    type="date"
-                    className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="size" className="sr-only">Size</label>
-                  <select
-                    id="size"
-                    name="size"
-                    className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  >
-                    <option value="">Cualquier talla</option>
-                    <option>XS</option>
-                    <option>S</option>
-                    <option>M</option>
-                    <option>L</option>
-                    <option>XL</option>
-                  </select>
-                </div>
-                <div className="lg:col-span-5">
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-fuchsia-600 px-6 py-3 text-sm font-semibold text-white hover:bg-fuchsia-500 transition-colors"
-                  >
-                    Buscar vestidos
-                  </button>
-                </div>
-              </form>
+                
+                <form action="/search" method="GET" className="p-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <div className="lg:col-span-3">
+                      <label htmlFor="query" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Búsqueda general</label>
+                      <input
+                        id="query"
+                        name="q"
+                        type="text"
+                        placeholder="Buscar por nombre, color, estilo..."
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="start" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fecha inicio</label>
+                      <input
+                        id="start"
+                        name="start"
+                        type="date"
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="end" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fecha fin</label>
+                      <input
+                        id="end"
+                        name="end"
+                        type="date"
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="size" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Talla</label>
+                      <input
+                        id="size"
+                        name="size"
+                        type="text"
+                        placeholder="Ej: S, M, L, XL"
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label htmlFor="minPrice" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Precio mínimo ($/día)</label>
+                      <input
+                        id="minPrice"
+                        name="minPrice"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Ej: 10.00"
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="maxPrice" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Precio máximo ($/día)</label>
+                      <input
+                        id="maxPrice"
+                        name="maxPrice"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="Ej: 100.00"
+                        className="w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white dark:focus:bg-slate-900 transition-all outline-none"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-fuchsia-600 text-white font-medium hover:bg-fuchsia-700 focus:ring-2 focus:ring-fuchsia-200 transition-all"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Buscar artículos
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </section>

@@ -88,6 +88,21 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
       return
     }
 
+    // Validar que el periodo no exceda 5 días
+    const startDate = new Date(start)
+    const endDate = new Date(end)
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    if (diffDays > 5) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Periodo muy largo',
+        text: 'El periodo de alquiler no puede ser mayor a 5 días',
+      })
+      return
+    }
+
     // Validar que las fechas no sean en el pasado
     const today = new Date().toISOString().split('T')[0]
     if (start < today) {
@@ -112,16 +127,12 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
       if (response.ok) {
         await Swal.fire({
           icon: 'success',
-          title: '¡Reserva exitosa!',
-          text: isAuthenticated 
-            ? 'Tu alquiler ha sido confirmado. Recibirás un email con los detalles.' 
-            : 'Tu solicitud ha sido enviada. Te contactaremos pronto para confirmar la disponibilidad.',
-          timer: 3000,
-          showConfirmButton: true,
+          title: '¡Reserva enviada!',
+          text: 'Tu solicitud de alquiler ha sido enviada y está pendiente de aprobación. Te contactaremos pronto.',
           confirmButtonText: 'Entendido',
         })
-        router.refresh()
-        e.currentTarget.reset()
+        // Recargar la página para mostrar las fechas bloqueadas
+        window.location.reload()
       } else {
         // Manejar errores específicos del servidor
         let errorMessage = 'Ocurrió un error al procesar tu solicitud'
@@ -137,6 +148,9 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
           } else if (data.error.includes('End date')) {
             errorTitle = 'Fechas inválidas'
             errorMessage = 'La fecha de fin debe ser posterior a la fecha de inicio'
+          } else if (data.error.includes('exceed 5 days')) {
+            errorTitle = 'Periodo muy largo'
+            errorMessage = 'El periodo de alquiler no puede ser mayor a 5 días'
           } else if (data.error.includes('not found')) {
             errorTitle = 'Artículo no encontrado'
             errorMessage = 'El artículo que intentas alquilar no existe'
@@ -153,6 +167,7 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
           title: errorTitle,
           text: errorMessage,
         })
+        setIsSubmitting(false)
       }
     } catch (error) {
       console.error('Error submitting rental:', error)
@@ -161,7 +176,6 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
         title: 'Error de conexión',
         text: 'No se pudo conectar con el servidor. Por favor, verifica tu conexión e intenta nuevamente.',
       })
-    } finally {
       setIsSubmitting(false)
     }
   }

@@ -91,9 +91,11 @@ export default async function Page() {
                         ? 'bg-green-100 text-green-800' 
                         : r.status === 'canceled'
                         ? 'bg-red-100 text-red-800'
+                        : r.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-slate-100 text-slate-800'
                     }`}>
-                      {r.status === 'active' ? 'Activo' : r.status === 'canceled' ? 'Cancelado' : r.status}
+                      {r.status === 'active' ? 'Activo' : r.status === 'canceled' ? 'Cancelado' : r.status === 'pending' ? 'Pendiente' : r.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -135,9 +137,11 @@ export default async function Page() {
                     ? 'bg-green-100 text-green-800' 
                     : r.status === 'canceled'
                     ? 'bg-red-100 text-red-800'
+                    : r.status === 'pending'
+                    ? 'bg-yellow-100 text-yellow-800'
                     : 'bg-slate-100 text-slate-800'
                 }`}>
-                  {r.status === 'active' ? 'Activo' : r.status === 'canceled' ? 'Cancelado' : r.status}
+                  {r.status === 'active' ? 'Activo' : r.status === 'canceled' ? 'Cancelado' : r.status === 'pending' ? 'Pendiente' : r.status}
                 </span>
               </div>
               
