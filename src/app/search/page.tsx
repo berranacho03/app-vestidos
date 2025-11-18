@@ -1,35 +1,57 @@
 import Link from "next/link";
 import Image from "next/image";
-import {listItems, type Category} from "../../../lib/RentalManagementSystem";
+import {listItems, type Category, getItemRentals, hasOverlap} from "../../../lib/RentalManagementSystem";
 
 type SearchParams = {
   q?: string;
-  category?: Category | "";
   size?: string;
-  color?: string;
-  style?: string;
   start?: string;
   end?: string;
+  minPrice?: string;
+  maxPrice?: string;
 };
 
 export default async function Page({ searchParams }: { searchParams: SearchParams }) {
-  const { q = "", category = "", size = "", color = "", style = "" } = searchParams;
-  const items = await listItems({
+  const { q = "", size = "", start = "", end = "", minPrice = "", maxPrice = "" } = searchParams;
+  let items = await listItems({
     q,
-    category: category || undefined,
     size: size || undefined,
-    color: color || undefined,
-    style: style || undefined,
   });
+
+  // Filtrar por precio
+  if (minPrice) {
+    const min = parseFloat(minPrice);
+    items = items.filter(item => item.pricePerDay >= min);
+  }
+  if (maxPrice) {
+    const max = parseFloat(maxPrice);
+    items = items.filter(item => item.pricePerDay <= max);
+  }
+
+  // Filtrar por disponibilidad en fechas
+  if (start && end) {
+    const availableItems = [];
+    for (const item of items) {
+      const rentals = await getItemRentals(item.id);
+      const isAvailable = rentals.every((r) => !hasOverlap(start, end, r.start, r.end));
+      if (isAvailable) {
+        availableItems.push(item);
+      }
+    }
+    items = availableItems;
+  }
 
   // Helper para crear URLs de filtros
   const getFilterUrl = (removeParam: string) => {
     const params: Record<string, string> = {};
     if (q && removeParam !== 'q') params.q = q;
-    if (category && removeParam !== 'category') params.category = category;
     if (size && removeParam !== 'size') params.size = size;
-    if (color && removeParam !== 'color') params.color = color;
-    if (style && removeParam !== 'style') params.style = style;
+    // Si estamos removiendo 'start' o 'end', remover ambos
+    if (start && removeParam !== 'start' && removeParam !== 'end') params.start = start;
+    if (end && removeParam !== 'start' && removeParam !== 'end') params.end = end;
+    // Si estamos removiendo minPrice o maxPrice, remover ambos
+    if (minPrice && removeParam !== 'minPrice' && removeParam !== 'maxPrice') params.minPrice = minPrice;
+    if (maxPrice && removeParam !== 'minPrice' && removeParam !== 'maxPrice') params.maxPrice = maxPrice;
     
     const urlParams = new URLSearchParams(params);
     return `/search${urlParams.toString() ? '?' + urlParams.toString() : ''}`;
@@ -37,6 +59,25 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      {/* Header con botón de volver */}
+      <div className="mb-8">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-slate-200 hover:bg-white hover:shadow-sm transition-all duration-200 text-slate-700 hover:text-slate-900"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-4 w-4" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="text-sm font-medium">Volver al inicio</span>
+        </Link>
+      </div>
+
       <h1 className="text-2xl sm:text-3xl font-bold mb-8">Explorar catálogo</h1>
       
       {/* Card de filtros */}
@@ -59,9 +100,9 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
           </div>
         </div>
         
-        <form method="GET" className="p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
-            <div className="lg:col-span-2">
+        <form method="GET" className="p-6" key={`${q}-${size}-${start}-${end}-${minPrice}-${maxPrice}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="lg:col-span-3">
               <label className="block text-sm font-medium text-slate-700 mb-2">Búsqueda general</label>
               <input 
                 name="q" 
@@ -72,18 +113,23 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Categoría</label>
-              <select 
-                name="category" 
-                defaultValue={category} 
-                className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none"
-              >
-                <option value="">Todas las categorías</option>
-                <option value="dress">Vestidos</option>
-                <option value="shoes">Zapatos</option>
-                <option value="bag">Bolsos</option>
-                <option value="jacket">Chaquetas</option>
-              </select>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Fecha inicio</label>
+              <input 
+                name="start" 
+                type="date"
+                defaultValue={start} 
+                className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none" 
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Fecha fin</label>
+              <input 
+                name="end" 
+                type="date"
+                defaultValue={end} 
+                className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none" 
+              />
             </div>
             
             <div>
@@ -95,25 +141,31 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
                 className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none" 
               />
             </div>
-            
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Color</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Precio mínimo ($/día)</label>
               <input 
-                name="color" 
-                defaultValue={color} 
-                placeholder="Ej: rojo, azul, negro" 
+                name="minPrice" 
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={minPrice} 
+                placeholder="Ej: 10.00" 
                 className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none" 
               />
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Estilo</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Precio máximo ($/día)</label>
               <input 
-                name="style" 
-                defaultValue={style} 
-                placeholder="Ej: elegante, casual, formal" 
+                name="maxPrice" 
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={maxPrice} 
+                placeholder="Ej: 100.00" 
                 className="w-full rounded-lg border-slate-300 bg-slate-50 px-4 py-3 text-slate-900 placeholder-slate-500 focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 focus:bg-white transition-all outline-none" 
               />
             </div>
@@ -134,7 +186,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       </div>
 
       {/* Indicadores de filtros activos */}
-      {(q || category || size || color || style) && (
+      {(q || size || start || end || minPrice || maxPrice) && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <h4 className="text-sm font-medium text-slate-700">Filtros activos:</h4>
@@ -156,19 +208,6 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
                 </Link>
               </span>
             )}
-            {category && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {category === 'dress' ? 'Vestidos' : 
-                 category === 'shoes' ? 'Zapatos' : 
-                 category === 'bag' ? 'Bolsos' : 
-                 category === 'jacket' ? 'Chaquetas' : category}
-                <Link href={getFilterUrl('category')} className="hover:text-blue-900">
-                  <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </Link>
-              </span>
-            )}
             {size && (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                 Talla: {size}
@@ -179,20 +218,20 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
                 </Link>
               </span>
             )}
-            {color && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                Color: {color}
-                <Link href={getFilterUrl('color')} className="hover:text-orange-900">
+            {(start || end) && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800">
+                Fechas: {start || '...'} - {end || '...'}
+                <Link href={getFilterUrl('start')} className="hover:text-cyan-900">
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                 </Link>
               </span>
             )}
-            {style && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                Estilo: {style}
-                <Link href={getFilterUrl('style')} className="hover:text-purple-900">
+            {(minPrice || maxPrice) && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                Precio: ${minPrice || '0'} - ${maxPrice || '∞'}
+                <Link href={getFilterUrl('minPrice')} className="hover:text-emerald-900">
                   <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
@@ -241,9 +280,9 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
           </div>
         ))}
         {items.length === 0 && (
-          <div className="col-span-full text-center py-12">
-            <p className="text-lg text-slate-600 dark:text-slate-400 mb-2">No se encontraron artículos</p>
-            <p className="text-sm text-slate-500">Intenta ajustar tus filtros de búsqueda</p>
+          <div className="col-span-full text-center py-12 bg-white rounded-lg border border-slate-200">
+            <p className="text-lg text-slate-900 mb-2 font-medium">No se encontraron artículos</p>
+            <p className="text-sm text-slate-600">Intenta ajustar tus filtros de búsqueda</p>
           </div>
         )}
       </div>
