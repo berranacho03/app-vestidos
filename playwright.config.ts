@@ -23,10 +23,14 @@ export default defineConfig({
     },
   ],
   
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  // webServer deshabilitado temporalmente - iniciar servidor manualmente con: npm run dev
+  // webServer: {
+  //   command: 'npm run dev',
+  //   url: 'http://localhost:3000',
+  //   reuseExistingServer: !process.env.CI,
+  //   timeout: 120 * 1000,
+  //   stdout: 'pipe',
+  //   stderr: 'pipe',
+  // },
 });
 

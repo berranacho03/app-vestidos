@@ -1,6 +1,11 @@
 CREATE DATABASE IF NOT EXISTS rentalDB;
 USE rentalDB;
 
+-- Otorgar permisos al usuario appuser sobre la base de datos rentalDB
+-- Esto es necesario porque el usuario puede no tener permisos si la base de datos ya existía
+GRANT ALL PRIVILEGES ON rentalDB.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS Users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
