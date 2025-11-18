@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     question: "¿Cuánto tiempo puedo alquilar un artículo?",
-    answer: "Ofrecemos alquileres desde 2 hasta 7 días. Para períodos más largos, por favor contáctanos directamente.",
+    answer: "Ofrecemos alquileres de hasta 5 días. Para períodos más largos, por favor contáctanos directamente.",
   },
   {
     question: "¿Qué pasa si el artículo no me queda bien?",

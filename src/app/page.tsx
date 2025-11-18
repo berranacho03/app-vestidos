@@ -169,7 +169,7 @@ export default async function Home() {
                   />
                   <div className="absolute inset-0 flex items:end p-4">
                     <span className="inline-flex items-center rounded-full bg-white/85 dark:bg-slate-800/80 backdrop-blur px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100">
-                      From ${item.price}/day
+                      Desde ${item.price}/día
                     </span>
                   </div>
                 </div>

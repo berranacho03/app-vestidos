@@ -148,8 +148,8 @@ export default function ItemCalendar({ itemId }: Props) {
           </p>
           <p className="text-xs mt-1">
             {selectedEnd 
-              ? "Click on a date to start a new selection" 
-              : "Click on another available date to complete your selection"
+              ? "Clickea en una fecha para seleccionarla." 
+              : "Clickea en otra fecha disponible para completar tu selección."
             }
           </p>
         </div>

@@ -237,12 +237,18 @@ export default function RentalForm({ itemId, csrf, isAuthenticated, fullUserInfo
             <input 
               id="phone" 
               name="phone" 
-              type="tel"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               required 
               minLength={8}
-              placeholder="Tu número de teléfono" 
+              placeholder="Solo números (ej: 099123456)" 
               className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-200 outline-none transition-all"
               disabled={isSubmitting}
+              onInput={(e) => {
+                const target = e.target as HTMLInputElement;
+                target.value = target.value.replace(/[^0-9]/g, '');
+              }}
             />
           </div>
         </>

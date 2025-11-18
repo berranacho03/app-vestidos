@@ -15,7 +15,7 @@ export default function FAQPage() {
         </div>
         <div>
           <h2 className="font-semibold">¿Cuánto tiempo puedo alquilar?</h2>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">Entre 2 y 7 días. Si necesitas más tiempo, contáctanos.</p>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">Hasta 5 días. Si necesitas más tiempo, contáctanos.</p>
         </div>
         <div>
           <h2 className="font-semibold">¿Necesito crear una cuenta?</h2>

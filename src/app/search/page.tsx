@@ -258,7 +258,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
               <Image src={it.images[0]} alt={it.alt} fill className="object-cover" />
               <div className="absolute inset-0 flex items-end p-3">
                 <span className="rounded-full bg-white/85 dark:bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100">
-                  From ${it.pricePerDay}/day
+                  Desde ${it.pricePerDay}/día
                 </span>
               </div>
             </div>
