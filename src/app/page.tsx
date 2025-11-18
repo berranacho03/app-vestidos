@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import HeaderServer from "./components/HeaderServer";
+import HowCarousel from "./components/HowCarousel";
 import { listItems } from "../../lib/RentalManagementSystem";
 
 export default async function Home() {
@@ -192,14 +193,22 @@ export default async function Home() {
         <section id="how" className="bg-slate-50/70 dark:bg-slate-900/60 border-y border-slate-200/60 dark:border-slate-800">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
             <h2 className="text-2xl sm:text-3xl font-bold text-center">Funcionamiento</h2>
-            <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {steps.map((s, i) => (
-                <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
-                  <div className="mx-auto h-12 w-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center text-2xl">{s.emoji}</div>
-                  <h3 className="mt-4 font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{s.text}</p>
-                </div>
-              ))}
+            <div className="mt-10">
+              {/* Carousel for mobile: show one at a time */}
+              <div className="sm:hidden">
+                <HowCarousel steps={steps} />
+              </div>
+
+              {/* Grid for larger screens */}
+              <div className="hidden sm:grid grid-cols-3 gap-6">
+                {steps.map((s, i) => (
+                  <div key={i} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
+                    <div className="mx-auto h-12 w-12 rounded-full bg-fuchsia-600/10 flex items-center justify-center text-2xl">{s.emoji}</div>
+                    <h3 className="mt-4 font-semibold">{s.title}</h3>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{s.text}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
