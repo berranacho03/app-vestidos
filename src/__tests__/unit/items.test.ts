@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { listItems } from '../../../lib/RentalManagementSystem';
-import { query } from '../../../lib/db';
+import { POST as itemsPOST } from '../../app/api/items/route';
+import { DELETE as itemDELETE } from '../../app/api/items/[id]/route';
 
-test('items filtering returns expected results (integration with DB)', async (t) => {
+test('filtrado de items devuelve resultados esperados (integración con DB)', async (t) => {
   // Create a unique test item in DB, run filters against it, then clean up.
   const uniqueName = `TestItem-${Date.now()}-${Math.floor(Math.random()*10000)}`;
   const sizes = JSON.stringify(['XS', 'S']);
@@ -11,32 +12,24 @@ test('items filtering returns expected results (integration with DB)', async (t)
   const style = 'filter-test-style';
   const color = 'purple-test-color';
 
-  // Insert test item
+  // Create the test item via POST handler
+  let itemId: number | undefined;
   try {
-    await query(
-      `INSERT INTO Items (name, pricePerDay, sizes, category, style, description, color, alt, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [uniqueName, 9.99, sizes, 'dress', style, 'desc test item', color, uniqueName, images]
-    );
-  } catch (err) {
-    // If DB not available or insert fails, skip the test to avoid breaking environment
-    t.skip();
-    return;
-  }
-
-  // Find the inserted item id
-  let rows: any[];
-  try {
-    rows = await query('SELECT id FROM Items WHERE name = ?', [uniqueName]);
-    if (!rows || rows.length === 0) {
-      t.skip();
-      return;
-    }
+    const req = new Request('http://localhost/api/items', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: uniqueName, price: 9.99, sizes: ['XS','S'], category: 'dress', style, description: 'desc test item', color, alt: uniqueName, imageUrl: '/images/test1.jpg' }),
+    });
+    const res = await itemsPOST(req as any);
+    const status = (res as any).status ?? 201;
+    if (status !== 201) { t.skip(); return; }
+    const body = await res.json();
+    itemId = body?.item?.id;
+    if (!itemId) { t.skip(); return; }
   } catch (err) {
     t.skip();
     return;
   }
-
-  const itemId = rows[0].id;
 
   try {
     // 1) General search by q (name)
@@ -60,13 +53,7 @@ test('items filtering returns expected results (integration with DB)', async (t)
     assert.ok(res5.some((it: any) => it.id === itemId), 'should find item by style partial');
 
   } finally {
-    // Cleanup: remove the test item
-    try {
-      await query('DELETE FROM Items WHERE id = ?', [itemId]);
-    } catch (e) {
-      // best-effort cleanup
-      // eslint-disable-next-line no-console
-      console.error('Failed to cleanup test item', e);
-    }
+    // Cleanup: remove the test item via DELETE handler
+    try { if (itemId) await itemDELETE(new Request('http://localhost/api/items/' + itemId, { method: 'DELETE' }) as any, { params: Promise.resolve({ id: String(itemId) }) } as any); } catch (e) { console.error('Failed to cleanup test item', e); }
   }
 });

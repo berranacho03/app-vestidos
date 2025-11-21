@@ -5,7 +5,7 @@ import { listItems, isItemAvailable, createRental, approveRental, deleteRental }
 
 // Test pure utility hasOverlap
 
-test('hasOverlap returns false for disjoint intervals', () => {
+test('hasOverlap devuelve false para intervalos disjuntos', () => {
   const aStart = '2025-01-01';
   const aEnd = '2025-01-03';
   const bStart = '2025-01-04';
@@ -13,7 +13,7 @@ test('hasOverlap returns false for disjoint intervals', () => {
   assert.strictEqual(hasOverlap(aStart, aEnd, bStart, bEnd), false);
 });
 
-test('hasOverlap returns true for overlapping intervals', () => {
+test('hasOverlap devuelve true para intervalos superpuestos', () => {
   const aStart = '2025-01-01';
   const aEnd = '2025-01-10';
   const bStart = '2025-01-05';
@@ -21,7 +21,7 @@ test('hasOverlap returns true for overlapping intervals', () => {
   assert.strictEqual(hasOverlap(aStart, aEnd, bStart, bEnd), true);
 });
 
-test('hasOverlap treats touching end/start as overlap (end == start)', () => {
+test('hasOverlap trata tope fin/inicio como superposición (end == start)', () => {
   const aStart = '2025-01-01';
   const aEnd = '2025-01-05';
   const bStart = '2025-01-05';
@@ -30,7 +30,7 @@ test('hasOverlap treats touching end/start as overlap (end == start)', () => {
   assert.strictEqual(hasOverlap(aStart, aEnd, bStart, bEnd), true);
 });
 
-test('hasOverlap works when intervals are reversed', () => {
+test('hasOverlap funciona cuando los intervalos están invertidos', () => {
   const aStart = '2025-01-10';
   const aEnd = '2025-01-20';
   const bStart = '2025-01-01';
@@ -38,7 +38,7 @@ test('hasOverlap works when intervals are reversed', () => {
   assert.strictEqual(hasOverlap(aStart, aEnd, bStart, bEnd), false);
 });
 
-test('full rental process (integration) using DB if available', async (t) => {
+test('proceso completo de alquiler (integración)', async (t) => {
   // Attempt to discover an item to use; if none available, skip this integration test.
   const items = await listItems();
   if (!items || items.length === 0) {
