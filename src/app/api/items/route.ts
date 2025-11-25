@@ -32,6 +32,7 @@ export async function POST(req: Request) {
     const description = (body.description || "").trim() || name;
     const color = (body.color || "").trim() || "N/A";
     const alt = (body.alt || "").trim() || name;
+    const style = (body.style || "").trim() || null;
     const sizes = body.sizes && body.sizes.length > 0 ? JSON.stringify(body.sizes) : null;
     const imageUrl = body.imageUrl ? body.imageUrl.trim() : null;
     const images = imageUrl ? JSON.stringify([imageUrl]) : JSON.stringify(["/images/dresses/default.jpg"]);
@@ -39,13 +40,13 @@ export async function POST(req: Request) {
     if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
 
     const res = await query(
-      "INSERT INTO Items (name, pricePerDay, category, description, color, alt, sizes, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
-      [name, pricePerDay, category, description, color, alt, sizes, images]
+      "INSERT INTO Items (name, pricePerDay, category, description, color, alt, style, sizes, images) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", 
+      [name, pricePerDay, category, description, color, alt, style, sizes, images]
     );
     const insertId = (res && (res as any).insertId) || undefined;
     if (!insertId) return NextResponse.json({ error: "insert failed" }, { status: 500 });
 
-    const inserted = await query("SELECT id, name, pricePerDay, category, sizes, createdAt FROM Items WHERE id = ?", [insertId]);
+    const inserted = await query("SELECT id, name, pricePerDay, category, sizes, style, description, color, alt, images, createdAt FROM Items WHERE id = ?", [insertId]);
     return NextResponse.json({ item: (inserted && inserted[0]) || null }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || String(err) }, { status: 500 });

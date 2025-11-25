@@ -40,7 +40,7 @@ export default function TermsPage() {
             <section className="space-y-4 mt-8">
               <h2 className="text-2xl font-semibold">3. Período de Alquiler y Devoluciones</h2>
               <p className="text-slate-700 dark:text-slate-300">
-                Los períodos de alquiler van de 2 a 7 días. El período de alquiler comienza en la fecha de entrega y finaliza en la fecha de devolución especificada en su pedido. Las devoluciones tardías pueden incurrir en cargos adicionales. Los artículos deben devolverse utilizando la etiqueta de envío prepagada proporcionada.
+                Los períodos de alquiler van hasta 5 días. El período de alquiler comienza en la fecha de entrega y finaliza en la fecha de devolución especificada en su pedido. Las devoluciones tardías pueden incurrir en cargos adicionales. Los artículos deben devolverse utilizando la etiqueta de envío prepagada proporcionada.
               </p>
             </section>
 

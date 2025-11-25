@@ -171,12 +171,14 @@ export default function InventoryManager() {
           </div>
           <button 
             onClick={openCreateModal} 
-            className="bg-slate-900 text-white hover:bg-slate-800 font-medium rounded-lg px-5 py-2.5 transition-colors flex items-center gap-2"
+            className="bg-slate-900 text-white hover:bg-slate-800 font-medium rounded-lg px-3 py-2 sm:px-5 sm:py-2.5 transition-colors flex items-center gap-2 justify-center sm:justify-start"
+            aria-label="Agregar Item"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="hidden sm:inline h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
             </svg>
-            Agregar Item
+            <span className="sm:hidden text-xl font-semibold">+</span>
+            <span className="hidden sm:inline">Agregar Item</span>
           </button>
         </div>
       </div>
@@ -388,7 +390,7 @@ export default function InventoryManager() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg transform transition-all border border-slate-200">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-full sm:max-w-lg max-h-[90vh] overflow-auto transform transition-all border border-slate-200">
             <div className="border-b border-slate-200 p-6">
               <h4 className="text-xl font-semibold text-slate-900">{editingItem ? "Editar Item" : "Crear Nuevo Item"}</h4>
               <p className="text-sm text-slate-500 mt-1">{editingItem ? "Modifica la información del producto" : "Completa la información del producto"}</p>
@@ -465,7 +467,7 @@ export default function InventoryManager() {
                 </div>
               )}
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <button 
                   type="button" 
                   className="flex-1 border border-slate-300 rounded-lg px-6 py-2.5 font-medium text-slate-700 hover:bg-slate-50 transition-all" 
