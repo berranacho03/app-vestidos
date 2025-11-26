@@ -23,8 +23,3 @@ Ejecutar la app web en Docker (construir y levantar web + db):
    docker compose build --pull
    docker compose up -d
 
-La app web estará disponible en http://localhost:3000
-
-Si quieres ejecutar scripts desde el host contra la base de datos del contenedor, usa el puerto 13306 (ver `.env`).
-
-

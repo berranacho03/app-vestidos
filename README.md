@@ -1,89 +1,195 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# App Vestidos - Sistema de Alquiler de Vestidos
 
-## Getting Started
+Aplicación web para gestión de alquiler de vestidos desarrollada con Next.js 15, React 19 y MySQL.
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+##  Requisitos Previos
 
-## Tech Stack
+- Docker y Docker Compose instalados
+- Puerto 3000 disponible (aplicación web)
+- Puerto 13306 disponible (MySQL)
 
-- Framework: Next.js (App Router)
-- Language: TypeScript
-- UI: React
-- Styling: Tailwind CSS (via PostCSS)
-- Linting: ESLint
-- Package manager: npm
+##  Instalación y Configuración
 
-## Data persistence (demo mode)
+### 1. Clonar el Repositorio
 
-- Demo mode stores data in memory only.
-- Data resets on server restart or when the development process is killed.
-- No external database is required for local development.
+```bash
+git clone https://github.com/berranacho03/app-vestidos.git
+cd app-vestidos
+```
 
-## Prerequisites
+### 2. Configurar Variables de Entorno
 
-- Node.js 18.17+ (LTS recommended) and npm 9+
-- Git
+Copiar el archivo de ejemplo y crear el archivo `.env`:
 
-Check your versions:
-- macOS/Linux: `node -v && npm -v`
-- Windows (PowerShell or CMD): `node -v && npm -v`
+```bash
+cp env.example .env
+```
 
-## Setup
+El archivo `.env` contiene las siguientes variables de configuración:
 
-### macOS
+```env
+# Configuración de MySQL
+MYSQL_ROOT_PASSWORD=database_root_password
+MYSQL_DATABASE=rentalDB
+MYSQL_USER=appuser
+MYSQL_PASSWORD=secretpassword
+MYSQL_PORT=13306
+MYSQL_HOST=127.0.0.1
 
-1) Install Node.js
-    - Recommended: Use the official installer from https://nodejs.org or a version manager like nvm.
-2) Clone the repository
-    - `git clone <your-repo-url> && cd <your-project-folder>`
-3) Install dependencies
-    - `npm install`
-4) Start the development server
-    - `npm run dev`
-5) Open the app
-    - Visit http://localhost:3000
+# Credenciales de administrador
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
 
-### Windows
+# Configuración de JWT
+JWT_SECRET=secretTestingKey
+JWT_EXPIRES_IN=24h
+```
 
-1) Install Node.js
-    - Download the Windows installer from https://nodejs.org and follow the prompts.
-2) Clone the repository
-    - PowerShell: `git clone <your-repo-url>; cd <your-project-folder>`
-3) Install dependencies
-    - `npm install`
-4) Start the development server
-    - `npm run dev`
-5) Open the app
-    - Visit http://localhost:3000
+### 3. Levantar los Contenedores
 
-### Common scripts
+Iniciar la aplicación con Docker Compose:
 
-- `npm run dev` — Start the local dev server with hot reload.
-- `npm run build` — Create a production build.
-- `npm start` — Run the production build locally.
-- `npm run lint` — Lint the codebase.
+```bash
+docker-compose up -d
+```
 
-### Notes
+Este comando iniciará:
+- **Base de datos MySQL** (puerto 13306)
+- **Aplicación Next.js** (puerto 3000)
 
-- Hot reloading: Edits to files under `app/` will auto-refresh the browser during development.
-- Ports: If port 3000 is in use, set `PORT=3001` (macOS/Linux) or `set PORT=3001` (Windows CMD) or `$env:PORT=3001` (PowerShell) before `npm run dev`.
+### 4. Verificar el Estado
+
+Comprobar que los contenedores están corriendo:
+
+```bash
+docker-compose ps
+```
+
+### 5. Acceder a la Aplicación
+
+Una vez levantados los servicios:
+
+- **Aplicación web**: http://localhost:3000
+- **Panel de administración**: http://localhost:3000/admin/login
+
+Credenciales por defecto del administrador:
+- Usuario: `admin`
+- Contraseña: `admin123`
+
+##  Testing
+
+### Ejecutar Tests Unitarios
+
+Para ejecutar los tests unitarios dentro del contenedor:
+
+```bash
+docker exec -it appvestidos-web sh -c 'cd /app && npm run test:unit:bundle'
+```
+
+### Otros Comandos de Testing Disponibles
 
 
+## 🛠️ Comandos Útiles
 
+### Desarrollo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Ver logs de los contenedores
+docker-compose logs -f
 
-## Learn More
+# Ver logs solo de la app
+docker-compose logs -f web
 
-To learn more about Next.js, take a look at the following resources:
+# Ver logs solo de la base de datos
+docker-compose logs -f db
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Acceder al contenedor de la aplicación
+docker exec -it appvestidos-web sh
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Acceder al contenedor de MySQL
+docker exec -it appvestidos-db mysql -u appuser -p
+```
 
-## Deploy on Vercel
+### Detener y Reiniciar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Detener los contenedores
+docker-compose down
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Detener y eliminar volúmenes (elimina la base de datos)
+docker-compose down -v
+
+# Reiniciar los contenedores
+docker-compose restart
+
+# Reconstruir los contenedores
+docker-compose up -d --build
+```
+
+## 📁 Estructura del Proyecto
+
+```
+app-vestidos/
+├── src/
+│   ├── app/                    # Páginas y rutas de Next.js
+│   │   ├── api/               # API routes
+│   │   ├── admin/             # Panel de administración
+│   │   ├── components/        # Componentes React
+│   │   ├── items/             # Página de productos
+│   │   └── ...
+│   └── __tests__/             # Tests
+│       ├── unit/              # Tests unitarios
+│       └── integration/       # Tests de integración
+├── lib/                       # Librerías y utilidades
+├── public/                    # Archivos estáticos
+├── scripts/                   # Scripts de base de datos
+├── docker-compose.yml         # Configuración de Docker
+├── Dockerfile                 # Imagen de Docker
+└── package.json              # Dependencias del proyecto
+```
+
+##  Tecnologías Utilizadas
+
+- **Frontend**: Next.js 15, React 19, TailwindCSS 4
+- **Backend**: Next.js API Routes
+- **Base de Datos**: MySQL 8.0
+- **Autenticación**: JWT, bcryptjs
+- **Testing**: Node.js test runner, Playwright
+- **Containerización**: Docker, Docker Compose
+
+##  Notas Adicionales
+
+- La base de datos se inicializa automáticamente con el script `scripts/init.sql`
+- Los datos se persisten en un volumen de Docker (`db_data`)
+- El puerto de MySQL está mapeado a 13306 en el host para evitar conflictos
+- La aplicación se recarga automáticamente en modo desarrollo
+
+##  Solución de Problemas
+
+### La aplicación no inicia
+
+```bash
+# Verificar logs
+docker-compose logs web
+
+# Reconstruir contenedores
+docker-compose down
+docker-compose up -d --build
+```
+
+### Error de conexión a la base de datos
+
+```bash
+# Verificar que MySQL esté saludable
+docker-compose ps
+
+# Revisar logs de la base de datos
+docker-compose logs db
+
+# Probar conexión manualmente
+docker exec -it appvestidos-db mysqladmin ping -h localhost
+```
+
+### Puerto en uso
+
+Si los puertos 3000 o 13306 están ocupados, modifica el archivo `docker-compose.yml` para usar puertos diferentes.
