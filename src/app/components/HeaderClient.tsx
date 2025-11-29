@@ -50,27 +50,11 @@ export default function HeaderClient() {
             </>
           ) : (
             <>
-              <Link href="/login" className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:hidden text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                  <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="hidden sm:inline text-sm hover:text-fuchsia-600">Iniciar sesión</span>
-              </Link>
               <Link href="/admin/login" className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:hidden text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l2 4 4 .5-3 2 1.2 4L12 12l-4.2 1.5L9 9 6 7l4-.5L12 2z" />
                 </svg>
                 <span className="hidden sm:inline text-sm hover:text-fuchsia-600">Admin</span>
-              </Link>
-              <Link href="/register" className="inline-flex items-center rounded-full bg-fuchsia-600 text-white px-3 py-2 text-sm font-medium hover:bg-fuchsia-500">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 21v-2a4 4 0 014-4h0" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 17v6" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 20h6" />
-                </svg>
-                <span className="hidden sm:inline">Convertite en GlamUser</span>
               </Link>
             </>
           )}

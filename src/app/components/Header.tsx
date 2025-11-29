@@ -57,11 +57,7 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="text-sm hover:text-fuchsia-600">Iniciar sesión</Link>
                   <Link href="/admin/login" className="text-sm hover:text-fuchsia-600">Admin</Link>
-                  <Link href="/register" className="inline-flex items-center rounded-full bg-fuchsia-600 text-white px-4 py-2 text-sm font-medium hover:bg-fuchsia-500">
-                    Convertite en GlamUser
-                  </Link>
                 </>
               )}
             </>
